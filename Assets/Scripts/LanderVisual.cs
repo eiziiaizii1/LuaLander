@@ -11,14 +11,15 @@ public class LanderVisual : MonoBehaviour
     private void Awake()
     {
         lander = GetComponent<Lander>();
-    }
 
-    private void Start()
-    {
         lander.OnBeforeForce += Lander_OnBeforeForce;
         lander.OnLeftForce += Lander_OnLeftForce;
         lander.OnRightForce += Lander_OnRightForce;
         lander.OnUpForce += Lander_OnUpForce;
+
+        SetThrusterParticleSystem(leftThrusterParticleSystem, false);
+        SetThrusterParticleSystem(rightThrusterParticleSystem, false);
+        SetThrusterParticleSystem(middleThrusterParticleSystem, false);
     }
 
     private void Lander_OnBeforeForce(object sender, EventArgs e)
