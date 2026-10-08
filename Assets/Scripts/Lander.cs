@@ -4,20 +4,43 @@ using UnityEngine.InputSystem;
 
 public class Lander : MonoBehaviour
 {
+    public static Lander Instance {get; private set;}
     public event EventHandler OnLeftForce;
     public event EventHandler OnRightForce;
     public event EventHandler OnUpForce;
     public event EventHandler OnBeforeForce;
+    public event EventHandler OnCoinPickup;
+    public event EventHandler<OnLandedEventArgs> OnLanded;
+    public class OnLandedEventArgs : EventArgs
+    {
+        public int point;
+    }
 
     private Rigidbody2D landerRigidbody2D;
 
+    private float fuelAmount = 10f;
+
     private void Awake()
     {
+        Instance = this;
         landerRigidbody2D = GetComponent<Rigidbody2D>();
     }
 
     private void Update()
     {
+        if (fuelAmount <=0)
+        {
+           return; 
+        }
+
+        if (Keyboard.current.upArrowKey.isPressed ||
+            Keyboard.current.leftArrowKey.isPressed ||
+            Keyboard.current.rightArrowKey.isPressed)
+        {
+            ConsumeFuel();
+            //Debug.Log("Fuel:" + fuelAmount);
+        }
+        
         OnBeforeForce?.Invoke(this, EventArgs.Empty);
         if (Keyboard.current.upArrowKey.isPressed)
         {
@@ -80,5 +103,31 @@ public class Lander : MonoBehaviour
 
         int score = Mathf.RoundToInt((landingAngleScore + landingSpeedScore) * landingPad.getScoreMultiplier());
         Debug.Log("score: " + score);
+        OnLanded?.Invoke(this, new OnLandedEventArgs
+        {
+            point = score,
+        });
+
+    }
+
+    private void ConsumeFuel()
+    {
+        float consumptionAmount= 1f;
+        fuelAmount -= consumptionAmount * Time.deltaTime;
+    }
+
+    void OnTriggerEnter2D(Collider2D collision)
+    {
+        if (collision.TryGetComponent<FuelPickup>(out FuelPickup fuelPickup))
+        {
+            float fuelPickupAmount = 10f;
+            fuelAmount += fuelPickupAmount;
+            fuelPickup.DestroySelf();
+        }
+        if (collision.TryGetComponent<CoinPickup>(out CoinPickup coinPickup))
+        {
+            OnCoinPickup?.Invoke(this, EventArgs.Empty);
+            coinPickup.DestroySelf();
+        }
     }
 }
