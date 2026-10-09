@@ -13,7 +13,19 @@ public class Lander : MonoBehaviour
     public event EventHandler<OnLandedEventArgs> OnLanded;
     public class OnLandedEventArgs : EventArgs
     {
+        public LandingType landingType;
+        public float speed;
+        public float angle;
+        public int multiplier;
         public int point;
+    }
+
+    public enum LandingType
+    {
+        Success,
+        WrongLandingArea,
+        TooSteepAngle,
+        TooFastSpeed
     }
 
     private Rigidbody2D landerRigidbody2D;
@@ -70,6 +82,14 @@ public class Lander : MonoBehaviour
         if (!collision2d.gameObject.TryGetComponent<LandingPad>(out LandingPad landingPad))
         {
             Debug.Log("Crashed on terrain!");
+        OnLanded?.Invoke(this, new OnLandedEventArgs
+        {
+            landingType = LandingType.WrongLandingArea,
+            speed = 0,
+            angle = 0,
+            multiplier = 0,
+            point = 0,
+        });
             return;
         }
 
@@ -79,6 +99,14 @@ public class Lander : MonoBehaviour
         {
             // Landed hard
             Debug.Log("Landed hard");
+            OnLanded?.Invoke(this, new OnLandedEventArgs
+            {
+                landingType = LandingType.TooFastSpeed,
+                speed = relativeVelocityMagnitude,
+                angle = 0,
+                multiplier = 0,
+                point = 0,
+            });
             return;
         }
 
@@ -89,6 +117,15 @@ public class Lander : MonoBehaviour
         {
             // too steep angle
             Debug.Log("too steep angle");
+            OnLanded?.Invoke(this, new OnLandedEventArgs
+            {
+                landingType = LandingType.TooSteepAngle,
+                speed = relativeVelocityMagnitude,
+                angle = dotVector,
+                multiplier = 0,
+                point = 0,
+            });
+
             return;
         }
 
@@ -108,6 +145,10 @@ public class Lander : MonoBehaviour
         Debug.Log("score: " + score);
         OnLanded?.Invoke(this, new OnLandedEventArgs
         {
+            landingType = LandingType.Success,
+            speed = relativeVelocityMagnitude,
+            angle = dotVector,
+            multiplier = landingPad.getScoreMultiplier(),
             point = score,
         });
 
