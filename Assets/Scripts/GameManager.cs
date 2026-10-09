@@ -3,11 +3,23 @@ using UnityEngine;
 
 public class GameManager : MonoBehaviour
 {
+    public static GameManager Instance {get; private set;}
     private int score;
+    private float time;
+
+    private void Awake()
+    {
+        Instance = this;
+    }
     private void Start()
     {
         Lander.Instance.OnCoinPickup += Lander_OnCoinPickup;
         Lander.Instance.OnLanded += Lander_OnLanded;
+    }
+
+    private void Update()
+    {
+        time += Time.deltaTime;    
     }
 
     private void Lander_OnLanded(object sender, Lander.OnLandedEventArgs e)
@@ -24,5 +36,14 @@ public class GameManager : MonoBehaviour
     {
         score += point;
         Debug.Log("score ==>"+ score);
+    }
+    public int GetScore()
+    {
+        return score;
+    }
+    
+    public float GetTime()
+    {
+        return time;
     }
 }

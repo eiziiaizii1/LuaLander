@@ -18,12 +18,15 @@ public class Lander : MonoBehaviour
 
     private Rigidbody2D landerRigidbody2D;
 
-    private float fuelAmount = 10f;
+    private float maxFuel = 10f;
+    private float fuelAmount;
+
 
     private void Awake()
     {
         Instance = this;
         landerRigidbody2D = GetComponent<Rigidbody2D>();
+        fuelAmount = maxFuel;
     }
 
     private void Update()
@@ -122,6 +125,10 @@ public class Lander : MonoBehaviour
         {
             float fuelPickupAmount = 10f;
             fuelAmount += fuelPickupAmount;
+            if (fuelAmount >= maxFuel)
+            {
+                fuelAmount = maxFuel;
+            }
             fuelPickup.DestroySelf();
         }
         if (collision.TryGetComponent<CoinPickup>(out CoinPickup coinPickup))
@@ -129,5 +136,25 @@ public class Lander : MonoBehaviour
             OnCoinPickup?.Invoke(this, EventArgs.Empty);
             coinPickup.DestroySelf();
         }
+    }
+
+    public float GetVelocityX()
+    {
+        return landerRigidbody2D.linearVelocityX;
+    }
+
+    public float GetVelocityY()
+    {
+        return landerRigidbody2D.linearVelocityY;
+    }
+
+    public float GetFuel()
+    {
+        return fuelAmount;
+    }
+
+    public float GetFuelNormalized()
+    {
+        return fuelAmount / maxFuel;
     }
 }
