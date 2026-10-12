@@ -1,4 +1,5 @@
 using System;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class GameManager : MonoBehaviour
@@ -6,6 +7,7 @@ public class GameManager : MonoBehaviour
     public static GameManager Instance {get; private set;}
     private int score;
     private float time;
+    private bool isTimerActvie;
 
     private void Awake()
     {
@@ -15,11 +17,20 @@ public class GameManager : MonoBehaviour
     {
         Lander.Instance.OnCoinPickup += Lander_OnCoinPickup;
         Lander.Instance.OnLanded += Lander_OnLanded;
+        Lander.Instance.OnStateChanged += Lander_OnStateChanged;
+    }
+
+    private void Lander_OnStateChanged(object sender, Lander.OnStateChangedEventArgs e)
+    {
+        isTimerActvie = e.state == Lander.State.Normal;
     }
 
     private void Update()
     {
-        time += Time.deltaTime;    
+        if (isTimerActvie)
+        {
+            time += Time.deltaTime; 
+        }
     }
 
     private void Lander_OnLanded(object sender, Lander.OnLandedEventArgs e)
