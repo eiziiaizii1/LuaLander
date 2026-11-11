@@ -25,8 +25,9 @@ public class StatsUI : MonoBehaviour
         arrowRight.SetActive(Lander.Instance.GetVelocityX() >= 0f);
         arrowUp.SetActive(Lander.Instance.GetVelocityY() >= 0f);
 
-        statsText.text = 
-          GameManager.Instance.GetScore() + "\n"
+        statsText.text =
+        GameManager.Instance.GetLevelNumber() + "\n" 
+        + GameManager.Instance.GetScore() + "\n"
         + Math.Round(GameManager.Instance.GetTime()) + "\n"
         + Math.Round(Math.Abs(Lander.Instance.GetVelocityX() * 10f)) + "\n"
         + Math.Round(Math.Abs(Lander.Instance.GetVelocityY() * 10f)) + "\n";
