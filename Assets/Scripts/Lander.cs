@@ -68,7 +68,8 @@ public class Lander : MonoBehaviour
             case State.WaitingToStart:
                 if (GameInput.Instance.IsUpActionPressed() ||
                     GameInput.Instance.IsLeftActionPressed() ||
-                    GameInput.Instance.IsRightActionPressed())
+                    GameInput.Instance.IsRightActionPressed() ||
+                    GameInput.Instance.GetMovementInputVector() != Vector2.zero)
                 {                   
                     landerRigidbody2D.gravityScale = GRAVITY_NORMAL;
                     SetState(State.Normal);
@@ -79,7 +80,8 @@ public class Lander : MonoBehaviour
             case State.Normal:
                 if (GameInput.Instance.IsUpActionPressed() ||
                     GameInput.Instance.IsLeftActionPressed() ||
-                    GameInput.Instance.IsRightActionPressed())
+                    GameInput.Instance.IsRightActionPressed() ||
+                    GameInput.Instance.GetMovementInputVector() != Vector2.zero)
                 {
                     ConsumeFuel();
                 }
@@ -89,20 +91,20 @@ public class Lander : MonoBehaviour
                     return; 
                 }
 
-                
-                if (GameInput.Instance.IsUpActionPressed() )
+                float gamepadDeadZone =.4f;
+                if (GameInput.Instance.IsUpActionPressed() || GameInput.Instance.GetMovementInputVector().y > gamepadDeadZone)
                 {
                     OnUpForce?.Invoke(this, EventArgs.Empty);
                     float force = 700f; 
                     landerRigidbody2D.AddForce(force * transform.up * Time.deltaTime);
                 }
-                if (GameInput.Instance.IsLeftActionPressed())
+                if (GameInput.Instance.IsLeftActionPressed() || GameInput.Instance.GetMovementInputVector().x < -gamepadDeadZone)
                 {
                     OnLeftForce?.Invoke(this, EventArgs.Empty);
                     float turnSpeed = +100f;
                     landerRigidbody2D.AddTorque(turnSpeed * Time.deltaTime);
                 }
-                if (GameInput.Instance.IsRightActionPressed())
+                if (GameInput.Instance.IsRightActionPressed() || GameInput.Instance.GetMovementInputVector().x > gamepadDeadZone)
                 {
                     OnRightForce?.Invoke(this, EventArgs.Empty);
                     float turnSpeed = -100f;
